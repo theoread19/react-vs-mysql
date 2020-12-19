@@ -8,8 +8,8 @@ function App(props) {
 
       <div>
         <Navbar />
-				<Footer />
 				<Formdb />
+				<Footer />
 			</div>
 
   );

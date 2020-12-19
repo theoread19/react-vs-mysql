@@ -33,10 +33,20 @@ class Formdb extends React.Component {
 
 	// add a record
 	addRecord = () => {
+		if (this.state.name === '' || this.state.location === '' || this.state.phone === '' || this.state.position === '') {
+			this.setState({
+				showAlert: true,
+				alertMsg:  "Fields are mandatory",
+				alertType: "error",
+			})
+			return;
+		}
+
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
 
 		var body = JSON.stringify({ name: this.state.name, location: this.state.location, phone: this.state.phone, gender: this.state.gender, position: this.state.position });
+
 		fetch("http://localhost:8000/api/create", {
 			method: "POST",
 			headers: myHeaders,
@@ -56,7 +66,7 @@ class Formdb extends React.Component {
 					alertType: "success",
 				});
 			});
-			
+
 	};
 
 	// fetch All Records
