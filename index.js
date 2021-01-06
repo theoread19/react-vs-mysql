@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const mysql = require("mysql");
+const users = require("../backend/users.js");
 var cors = require('cors');
 app.use(cors());
 // parse application/json
@@ -11,9 +12,8 @@ app.use(bodyParser.json());
 const conn = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "",
+	password: "root",
 	database: "crud",
-	insecureAuth : true
 });
 
 // connect to database
@@ -22,18 +22,17 @@ conn.connect((err) => {
 	console.log("MySQL connected");
 });
 
-// creat a new Record
+// creat a new User
 app.post("/api/create", (req, res) => {
-
 	let data = { name: req.body.name, location: req.body.location, phone: req.body.phone, gender: req.body.gender, position: req.body.position};
 	let sql = "INSERT INTO users SET ?";
 	let query = conn.query(sql, data, (err, result) => {
 		if (err) throw err;
-		res.send(JSON.stringify({ status: 200, error: null, response: "New Record is Added successfully" }));
+		res.send(JSON.stringify({ status: 200, error: null, response: "Create Complete" }));
 	});
 });
 
-// show all records
+// show all Users
 app.get("/api/view", (req, res) => {
 	let sql = "SELECT * FROM users";
 	let query = conn.query(sql, (err, result) => {
@@ -42,30 +41,39 @@ app.get("/api/view", (req, res) => {
 	});
 });
 
-// show a single record
+// show a single User
 app.get("/api/view/:id", (req, res) => {
-	let sql = "SELECT * FROM users WHERE id=" + req.params.id;
-	let query = conn.query(sql, (err, result) => {
+	let sql = "SELECT * FROM users WHERE id= ?";
+	let query = conn.query(sql, req.params.id, (err, result) => {
 		if (err) throw err;
 		res.send(JSON.stringify({ status: 200, error: null, response: result }));
 	});
 });
 
-// delete the record
+// delete the User
 app.delete("/api/delete/:id", (req, res) => {
-	let sql = "DELETE FROM users WHERE id=" + req.params.id + "";
-	let query = conn.query(sql, (err, result) => {
-		if (err) res.send(JSON.stringify({ status: 200, error: null, response: "err" }));;
-		res.send(JSON.stringify({ status: 200, error: null, response: "Record deleted successfully" }));
+	let sql = "DELETE FROM users WHERE id= ?";
+	let query = conn.query(sql, + req.params.id ,(err, result) => {
+		if (err) throw err;
+		res.send(JSON.stringify({ status: 200, error: null, response: "Delete Complete" }));
 	});
 });
 
-// update the Record
+// update the User
 app.put("/api/update/", (req, res) => {
-	let sql = "UPDATE users SET name='" + req.body.name + "', location='" + req.body.location + "', phone ='" + req.body.phone + "', gender ='" + req.body.gender + "', position ='" + req.body.position + "' WHERE id=" + req.body.id;
-	let query = conn.query(sql, (err, result) => {
+	let sql = "UPDATE users SET name= ?, location= ?, phone = ?, gender = ?, position = ? WHERE id= ?";
+	const newUsers = new users({
+		name: req.body.name,
+		id: req.body.id,
+		location: req.body.location,
+		phone: req.body.phone,
+		gender: req.body.gender,
+		position: req.body.position
+	})
+
+	let query = conn.query(sql, newUsers.send(), (err, result) => {
 		if (err) throw err;
-		res.send(JSON.stringify({ status: 200, error: null, response: "Record updated SuccessFully" }));
+		res.send(JSON.stringify({ status: 200, error: null, response: "Update Complete" }));
 	});
 });
 // call api
