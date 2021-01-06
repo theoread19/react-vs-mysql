@@ -49,6 +49,10 @@ class users {
       this.id
     ];
   }
+
+  set(){
+    
+  }
 }
 
 module.exports = users;
